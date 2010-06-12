@@ -8,30 +8,32 @@ methodology:
 Our architecture:
 * Polling tier per project -  projects range from 1000 - 10000+ hosts
 * Common notification tier -  all pollers send notification requests to
-                              notification tier and it has a rules engine
-                              to perform notification actions)
+                              notification tier, which has a rules engine
+                              to perform notification actions.
 * Common data trending tier - We use PNP plus a custom in-house long term
                               data trending solution that stores raw values
                               for very long periods of time.
 * Common database tier      - H/A master-master replicated database tier with
                               GSLB name for all pollers to use; can be 
-                              expanded to master1...masterN circular replication
-                              for large horizontal scaling
-* Common web UI tier        - Sinatra-based webapp (will be released OSS when
-                              ready) for NOC, admin, configuration etc use.
+                              expanded to master1...masterN circular 
+                              replication for large horizontal scaling
+* Common web UI tier        - Centralized operational view, command and 
+                              control, administration for NOC, admin, 
+                              configuration etc use.
 
 In our vision the operational SAs who maintain and manage projects also have
-full responsibility for their pollers - they do releases when they want, they
-ensure their pollers are up 24x7, they re-distribute checks as needed, they
-watch poller capacity.  We provide mentoring, training, and bake in as much
-information (key performance indicators, capacity warnings, etc) as we can into
-our software as possible to let them do just about everything they need to do
-without our team having to be in the middle of the process.
+full responsibility for their pollers - they do releases of Nagios 
+configurations when they want, they ensure their pollers are up 24x7, they 
+re-distribute checks as needed, they watch poller capacity.  We provide 
+mentoring, training, and bake in as much information (key performance 
+indicators, capacity warnings, etc) as we can into our software as possible 
+to let them do just about everything they need to do with regards to 
+monitoring without our team having to be in the middle of the process.
 
 Methodology
 ===========
-* All pollers write to a common database - schema has been updated to
-  allow for this.
+* All pollers within a project write to a common database - schema has been 
+  updated to allow for this.
 * Centralized (off poller hosts) UI does
    * Display of current host and service states
    * Remote command and control to all remote pollers
@@ -41,7 +43,7 @@ Methodology
    * Lets the user select which pollers checks should run on
    * Creates objects.pre-cache files for each poller along with
    a common retention.dat file
-   * Pushes all code to pollers over ssh (rsync)
+   * Pushes all code to pollers
    * Triggers restart
 
 Re-distribution of checks
