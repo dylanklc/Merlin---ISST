@@ -1,0 +1,14 @@
+*.o
+*.so
+core*
+mod.log
+junk
+monitor
+test
+blread
+endpoint
+*.log
+*.bin
+merlind
+*test
+version.c

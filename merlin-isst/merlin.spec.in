@@ -1,0 +1,105 @@
+%define mod_path /opt/monitor/op5/merlin
+%define nagios_cfg /opt/monitor/etc/nagios.cfg
+
+# prevent stripping of binaries
+%define __spec_install_post /usr/lib/rpm/brp-compress
+
+%{?dgroup:%define daemon_group %{dgroup}}
+
+Summary: %name is a Nagios module designed to communicate with Merlin
+Name: monitor-merlin
+Version: @@VERSION@@
+Release: @@RELEASE@@
+License: GPL
+Group: op5/Monitor
+URL: http://www.op5.se
+Source0: %name-%version.tar.gz
+Prefix: /opt/monitor
+Requires: monitor >= 4.0, merlin = %version-%release
+BuildRequires: mysql-devel
+BuildRoot: /override/%name-%version
+
+%description
+%name is an event broker module running inside Nagios. Its' only
+purpose in life is to send events from the Nagios core to the merlin
+daemon, which then takes appropriate action.
+
+
+%package -n merlin
+Summary: The merlin daemon is a multiplexing event-transport program
+Group: op5/Monitor
+Requires: libdbi
+Requires: libdbi-dbd-mysql
+
+%description -n merlin
+The merlin daemon is a multiplexing event-transport program designed to
+link multiple Nagios instances together. It can also inject status
+data into a variety of databases, using libdbi.
+
+
+%prep
+%setup -q
+
+%build
+make
+
+%install
+rm -rf %buildroot
+sh install-merlin.sh --batch --root=%buildroot --install=files,init \
+	--dest-dir %mod_path
+chmod 777 %buildroot/%mod_path/logs
+mkdir -p %buildroot%_sysconfdir/logrotate.d
+cp %_sourcedir/merlin.logrotate %buildroot%_sysconfdir/logrotate.d/merlin
+
+
+%pre
+# If we're upgrading the module while Nagios makes a call
+# into it, we'll end up with a core-dump due to some weirdness
+# in dlopen(). If we're installing anew, we need to update the
+# config and then restart. Either way, it's safe to stop it
+# unconditionally here
+sh /etc/init.d/monitor stop || :
+sh /etc/init.d/monitor slay || :
+
+%preun
+if [ $1 -eq 0 ]; then
+	# removing the ndbneb module entirely
+	sh /etc/init.d/monitor stop || :
+	sh /etc/init.d/monitor slay || :
+	sed -i /merlin.so/d %prefix/etc/nagios.cfg
+	sh /etc/init.d/monitor start || :
+	sh /etc/init.d/merlind stop || :
+fi
+
+%post
+%mod_path/install-merlin.sh --batch --install=config \
+	--nagios-cfg=%nagios_cfg
+sh /etc/init.d/monitor start || :
+
+%post -n merlin
+%mod_path/install-merlin.sh --batch --install=db
+/sbin/chkconfig --add merlind
+/etc/init.d/merlind restart
+
+
+%files
+%defattr(-,root,root)
+%mod_path/merlin.so
+
+%files -n merlin
+%defattr(-,root,root)
+%config %mod_path/merlin.conf
+%mod_path/db.sql
+%mod_path/merlind
+%mod_path/install-merlin.sh
+%mod_path/import.php
+%mod_path/object_importer.inc.php
+%mod_path/example.conf
+%mod_path/init.sh
+%_sysconfdir/logrotate.d/merlin
+/etc/init.d/merlind
+%dir %mod_path/logs
+
+%changelog
+* Tue Mar 17 2009 Andreas Ericsson <ae@op5.se>
+- Initial specfile creation.
