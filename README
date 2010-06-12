@@ -6,7 +6,7 @@ Major changes between the op5 Merlin and our version + our overall Nagios
 methodology:
 
 Our architecture:
-* Polling tier per project -  projects range from 1000 - 10000+ hosts)
+* Polling tier per project -  projects range from 1000 - 10000+ hosts
 * Common notification tier -  all pollers send notification requests to
                               notification tier and it has a rules engine
                               to perform notification actions)
