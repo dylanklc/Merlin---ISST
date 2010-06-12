@@ -83,6 +83,11 @@ Database
   the database as the remote pollers are restarted.
 * Field naming - where possible we aligned field names with retention.dat
   names / objects.cache names
+* Views - database schema includes views we use in our in-process UI, all
+          views can safely be removed from the schema without affecting
+          Merlin operations (we have a single source of truth for our
+          database on our middle tier / web UI project that writes out
+          the Merlin schema to keep the two in sync).
 
 Merlin:
 ==========
