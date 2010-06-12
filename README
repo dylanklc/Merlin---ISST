@@ -2,6 +2,28 @@ This fork is based on Merlin stable 0.6.7.
 
 http://www.op5.org/community/projects/merlin
 
+CREDITS:
+
+First and foremost, Andreas Ericsson and op5 for this project - it has a 
+terrific database abstraction layer now and promises even better functionality
+in the near future with regards to creating easy distributed Nagios setups.
+
+Our managers at Comcast, for allowing us to share our work with the open 
+source community (thank you, this is one of the many reasons Comcast is
+a great place to work!):
+* Jason Livingood
+* Mike Fischer
+* Eric Scholz
+
+Team members at Comcast who have contributed to this variant:
+* Jack Kidwell
+* Ryan Richins
+* Shaofeng Yang
+* Max Schubert
+
+What is different between the op5 version and ours?
+===================================================
+
 Major changes between the op5 Merlin and our version + our overall Nagios
 methodology:
 
@@ -62,7 +84,6 @@ Re-distribution of checks
    * Create common retention.dat file
    * Push code to all pollers affected
    * Restart all affected pollers
-
 
 
 Database
